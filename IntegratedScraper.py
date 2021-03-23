@@ -30,27 +30,98 @@ def init_browser(url):
     time.sleep(rantime)
     page = requests.get(url, headers=headers)
     soup = BeautifulSoup(page.text, 'html.parser')
-    return soup
+    return page, soup
 
-def scrape_review(url):
+def scrape_many_reviews(urls):
     #intialize dataframe
     cols = ['Store_Name', 'Reviewer_Name', 'Rating_Date', 'Review', 'Rating']
     lst = []
+    
+    for url in urls:
+        print('scraping reviews for : ', url)
+
+        nextPage = True
+        while nextPage:
+            #initialize browser
+            driver.get(url)
+            time.sleep(random.randint(1,2)/2)
+
+            #display more
+            more = driver.find_elements_by_xpath("//span[contains(text(),'Plus')]")
+            for x in range(0,len(more)):
+                try:
+                    driver.execute_script("arguments[0].click();", more[x])
+                    time.sleep(random.randint(1,2)/2)
+                except:
+                    pass
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+            #Store name
+            try:
+                storeName = soup.find('h1', class_='_3a1XQ88S').text
+            except:
+                storeName = 'None'
+
+            #Reviews
+            results = soup.find('div', class_='listContainer hide-more-mobile')
+            try:
+                reviews = results.find_all('div', class_='prw_rup prw_reviews_review_resp')
+            except Exception:
+                continue
+
+            #to Dataframe
+            try:
+                lst_dict = []
+                for review in reviews:
+                    ratingDate = review.find('span', class_='ratingDate').get('title')
+                    text_review = review.find('p', class_='partial_entry')
+                    if len(text_review.contents) > 2:
+                        reviewText = str(text_review.contents[0][:-3]) + ' ' + str(text_review.contents[1].text)
+                    else:
+                        reviewText = text_review.text
+                    reviewerUsername = review.find('div', class_='info_text pointer_cursor')
+                    reviewerUsername = reviewerUsername.select('div > div')[0].get_text(strip=True)
+                    rating = review.find('div', class_='ui_column is-9').findChildren('span')
+                    rating = str(rating[0]).split('_')[3].split('0')[0]
+                    lst.append([storeName, reviewerUsername, ratingDate, reviewText, rating])              
+            except:
+                pass
+
+            #Go to next page if exists
+            try:
+                unModifiedUrl = str(soup.find('a', class_ = 'nav next ui_button primary',href=True)['href'])
+                url = 'https://www.tripadvisor.fr' + unModifiedUrl
+                if url == 'https://www.tripadvisor.fr':
+                    nextPage = False
+            except:
+                nextPage = False
+
+    #create dataframe
+    data = pd.DataFrame(lst, columns=cols)
+    return data
+
+def scrape_reviews(url):
+    #intialize dataframe
+    cols = ['Store_Name', 'Reviewer_Name', 'Rating_Date', 'Review', 'Rating']
+    lst = []
+    
+    print('scraping reviews for : ', url)
 
     nextPage = True
     while nextPage:
-        #initialize browser
-        soup = init_browser(url)
+        #initialize browser       
+        driver.get(url)
+        time.sleep(random.randint(1,2)/2)
 
         #display more
-        more = driver.find_elements_by_xpath("//span[contains(text(),'More')]")
+        more = driver.find_elements_by_xpath("//span[contains(text(),'Plus')]")
         for x in range(0,len(more)):
             try:
                 driver.execute_script("arguments[0].click();", more[x])
-                time.sleep(random.randint(1,3)/2)
+                time.sleep(random.randint(1,2)/2)
             except:
                 pass
-        soup = BeautifulSoup(page.text, 'html.parser')
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
 
         #Store name
         try:
@@ -100,14 +171,17 @@ def scrape_restaurant_info(url):
     #intialize dataframe
     cols = ['Store_Name', 'Avg_Rating', 'Price_Range', 'Num_Review', 'Store_Adress', 'Store_Url']
     lst = []
+    pricesCat = ['€€€€', '€', '€€-€€€']
 
     #intialize browser
-    soup = init_browser(url)
+    page, soup = init_browser(url)
     
     #scrap
     storeName = soup.find('h1', class_='_3a1XQ88S').text
     avgRating = soup.find('span', class_='r2Cf69qf').text.strip()
     priceRange = soup.find('span', class_ = '_13OzAOXO _34GKdBMV').find('a', class_='_2mn01bsa').text
+    if priceRange not in pricesCat:
+        priceRange = "Unknown"
     storeAddress = soup.find('div', class_= '_2vbD36Hr _36TL14Jn').find('span', class_='_2saB_OSe').text.strip()
     noReviews = soup.find('a', class_='_10Iv7dOs').text.strip().split()[0]
     lst.append([storeName, avgRating, priceRange, noReviews, storeAddress, url])
@@ -127,7 +201,7 @@ def scrap_zone(url, full=False):
     while nextPage:
 
         #initialize browser
-        soup = init_browser(url)
+        page, soup = init_browser(url)
 
         #scrap
         links = soup.find_all('div', class_='wQjYiB7z')
@@ -135,8 +209,6 @@ def scrap_zone(url, full=False):
         for urlunique in links:
             storeUrl = 'https://www.tripadvisor.fr' + urlunique.find('a', class_='_15_ydu6b', href = True)['href']
             storesUrls.append(storeUrl)
-
-        print(len(storesUrls))
 
         for url1 in storesUrls:
             print(url1)
@@ -163,16 +235,3 @@ def scrap_zone(url, full=False):
 options = Options()
 options.add_argument('--headless')
 driver = webdriver.Chrome(executable_path='./chromedriver', options=options)
-
-################################ to be integrated ################################
-os.system('clear')
-url = str(input('Url Restaurant to scrape : '))
-os.system('clear')
-
-print(url)
-#resultRestaurant = scrape_restaurant_info(url)
-#resultReview = scrapeReview(url)
-resultZone = scrap_zone(url, full=True)
-print(resultZone.tail())
-print(resultZone.info())
-#print(resultRestaurant.tail())
