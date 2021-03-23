@@ -3,12 +3,18 @@ from typing import Optional
 import pandas as pd
 
 import IntegratedScraper
+import IntegratedSA
 
 app = FastAPI()
 
 @app.get("/")
 def home():
     return {"message": "Hello World"}
+
+@app.get('/text')
+def textSA(text):
+    text = IntegratedSA.preprocess_text(text)
+    return text
 
 @app.get('/restaurant/{cityid}')
 def city(cityid, review : bool = False, full : bool = False):
@@ -51,10 +57,21 @@ def dashboard(cityid, restoid):
     scrap = IntegratedScraper.scrape_reviews(url=url)
     title = IntegratedScraper.scrape_restaurant_info(url=url)
     scrap.drop(columns=['Store_Name'], inplace=True)
+
     top10coms = scrap.sort_values(by='Rating', ascending = False)
     worst10coms = scrap.sort_values(by='Rating')
 
-    data = {'Restaurant Info': title,
+    review_list = []
+    for review in scrap['Review']:
+        review = IntegratedSA.preprocess_text(review)
+        review_list.append(review.split())
+    
+    list_of_words= []
+    
+    words = pd.Series(review_list).sort_values(ascending=False)
+    
+    data = {'wordcloud' : words,
+            'Restaurant Info': title,
             'top 10 comments': top10coms.head(10),
             'Worst 10 comments': worst10coms.head(10)}
     return data
