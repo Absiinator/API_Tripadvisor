@@ -69,15 +69,15 @@ def preprocess_text(review):
     review.strip()
     return review
 
-def model_lstm():  
+def model_lstm(train_df):  
     top_words = 10000
     tokenizer = Tokenizer(num_words=top_words)
-    tokenizer.fit_on_texts(train_df['Review'])
-    list_tokenized_train = tokenizer.texts_to_sequences(train_df['Review'])
+    tokenizer.fit_on_texts(train_df)
+    list_tokenized_train = tokenizer.texts_to_sequences(train_df)
 
     max_review_length = 130
     X_train = pad_sequences(list_tokenized_train, maxlen=max_review_length)
-    y_train = train_df['Rating']
+    y_train = train_df
 
 
     embedding_vecor_length = 32
@@ -90,7 +90,7 @@ def model_lstm():
     
     lstm = model.fit(X_train, y_train, epochs=10, batch_size=64, validation_split=0.2)
     
-    list_tokenized_test = tokenizer.texts_to_sequences(test_df['Review'])
+    list_tokenized_test = tokenizer.texts_to_sequences(test_df)
     X_test = pad_sequences(list_tokenized_test, maxlen=max_review_length)
     y_test = test_df['Rating']
     prediction = model.predict(X_test)
@@ -98,18 +98,11 @@ def model_lstm():
     print("Accuracy of the model : ", accuracy_score(y_pred, y_test))
     print('F1-score: ', f1_score(y_pred, y_test))
     print('Confusion matrix:')
-    confusion_matrix(y_test,y_pred)
-    sns.heatmap(confusion_matrix(y_test,y_pred), annot=True, cmap=sns.color_palette('viridis'))
-    
-model_lstm()
+    confusion = confusion_matrix(y_test,y_pred)
+    score = model.evaluate(X_test, y_test, verbose=1)
+    return score, confusion
 
-score = model.evaluate(X_test, y_test, verbose=1)
+#score = model.evaluate(X_test, y_test, verbose=1)
 
-print("Test Score:", score[0])
-print("Test Accuracy:", score[1])
-
-wordcloud = WordCloud(max_words=5000, background_color="white").generate(str(df_filtered.Review))
-plt.figure(figsize=(20, 40))
-plt.imshow(wordcloud, interpolation="bilinear")
-plt.axis("off")
-plt.show()
+#print("Test Score:", score[0])
+#print("Test Accuracy:", score[1])
