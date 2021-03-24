@@ -1,17 +1,35 @@
-import nltk
-import warnings
-import warnings
-from bs4 import BeautifulSoup
-warnings.filterwarnings("ignore")
+import numpy as np
+import pandas as pd 
+import matplotlib.pyplot as plt
 import spacy
+import seaborn as sns
+from wordcloud import WordCloud
+import warnings
+warnings.filterwarnings("ignore")
 import re
+from bs4 import BeautifulSoup
+import nltk
 from tqdm import tqdm
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-import tensorflow
+from matplotlib import pyplot
+from keras.models import Sequential
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score,f1_score, confusion_matrix
+from keras.layers import Dense
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.sequence import pad_sequences
+from keras.layers import Dense , Input , LSTM , Embedding, Dropout , Activation, GRU, Flatten
+from keras.layers import Bidirectional, GlobalMaxPool1D
+from keras.models import Model, Sequential
+from keras.layers import Convolution1D
+from keras import initializers, regularizers, constraints, optimizers, layers
+from tensorflow import keras
 nltk.download('wordnet')
 nltk.download('stopwords')
+
+
 
 stop_words_fr = set(stopwords.words("french"))
 
@@ -30,6 +48,13 @@ def decontract(text):
     text = re.sub(r"\'m", " am", text)
     return text
 
+def stopwords(language):
+    stop_words_fr = stopwords.words(language)
+    stop_words_fr = set(stop_words_fr)
+    return stop_words_fr
+
+lemmatizer = WordNetLemmatizer()
+
 def preprocess_text(review):
     review = re.sub(r"http\S+", "", review)             # removing website links
     review = BeautifulSoup(review, 'html').get_text()   # removing html tags
@@ -43,3 +68,48 @@ def preprocess_text(review):
     review = " ".join(review)
     review.strip()
     return review
+
+def model_lstm():  
+    top_words = 10000
+    tokenizer = Tokenizer(num_words=top_words)
+    tokenizer.fit_on_texts(train_df['Review'])
+    list_tokenized_train = tokenizer.texts_to_sequences(train_df['Review'])
+
+    max_review_length = 130
+    X_train = pad_sequences(list_tokenized_train, maxlen=max_review_length)
+    y_train = train_df['Rating']
+
+
+    embedding_vecor_length = 32
+    model = Sequential()
+    model.add(Embedding(top_words+1, embedding_vecor_length, input_length=max_review_length))
+    model.add(LSTM(200))
+    model.add(Dense(1, activation='sigmoid'))
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    model.summary()
+    
+    lstm = model.fit(X_train, y_train, epochs=10, batch_size=64, validation_split=0.2)
+    
+    list_tokenized_test = tokenizer.texts_to_sequences(test_df['Review'])
+    X_test = pad_sequences(list_tokenized_test, maxlen=max_review_length)
+    y_test = test_df['Rating']
+    prediction = model.predict(X_test)
+    y_pred = (prediction > 0.5)
+    print("Accuracy of the model : ", accuracy_score(y_pred, y_test))
+    print('F1-score: ', f1_score(y_pred, y_test))
+    print('Confusion matrix:')
+    confusion_matrix(y_test,y_pred)
+    sns.heatmap(confusion_matrix(y_test,y_pred), annot=True, cmap=sns.color_palette('viridis'))
+    
+model_lstm()
+
+score = model.evaluate(X_test, y_test, verbose=1)
+
+print("Test Score:", score[0])
+print("Test Accuracy:", score[1])
+
+wordcloud = WordCloud(max_words=5000, background_color="white").generate(str(df_filtered.Review))
+plt.figure(figsize=(20, 40))
+plt.imshow(wordcloud, interpolation="bilinear")
+plt.axis("off")
+plt.show()
