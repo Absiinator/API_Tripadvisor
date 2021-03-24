@@ -24,7 +24,7 @@ user_agent_list = [
     'Mozilla/5.0 (Windows; U; Windows NT 6.0) AppleWebKit/533.20.5 (KHTML, like Gecko) Version/5.0.3 Safari/533.20.5']
 
 def init_browser(url):
-    rantime = random.randint(1,2)/2
+    rantime = random.randint(1,2)/3
     user_agent = random.choice(user_agent_list) 
     headers = {'User-Agent': user_agent}
     time.sleep(rantime)
@@ -44,7 +44,7 @@ def scrape_many_reviews(urls):
         while nextPage:
             #initialize browser
             driver.get(url)
-            time.sleep(random.randint(1,2)/2)
+            time.sleep(random.randint(1,2)/3)
 
             #display more
             more = driver.find_elements_by_xpath("//span[contains(text(),'Plus')]")
@@ -111,7 +111,7 @@ def scrape_reviews(url):
     while nextPage:
         #initialize browser       
         driver.get(url)
-        time.sleep(random.randint(1,2)/2)
+        time.sleep(random.randint(1,2)/3)
 
         #display more
         more = driver.find_elements_by_xpath("//span[contains(text(),'Plus')]")

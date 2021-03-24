@@ -70,7 +70,7 @@ def dashboard(cityid, restoid):
     
     words = pd.Series(review_list).sort_values(ascending=False)
     
-    data = {'wordcloud' : words,
+    data = {'wordcloud' : words[0],
             'Restaurant Info': title,
             'top 10 comments': top10coms.head(10),
             'Worst 10 comments': worst10coms.head(10)}
