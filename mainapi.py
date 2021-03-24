@@ -66,11 +66,9 @@ def dashboard(cityid, restoid):
         review = IntegratedSA.preprocess_text(review)
         review_list.append(review.split())
     
-    list_of_words= []
-    
     words = pd.Series(review_list).sort_values(ascending=False)
     
-    data = {'wordcloud' : words[0],
+    data = {'wordcloud' : words,
             'Restaurant Info': title,
             'top 10 comments': top10coms.head(10),
             'Worst 10 comments': worst10coms.head(10)}
