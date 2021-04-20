@@ -8,7 +8,7 @@ This API can be pretty slow if you run it for a whole city, because of waiting t
 ### how TripAdvisor works
 This information is requiered to know before using the API, because it uses a similar structure.\
 a TripAdvisor URL is as follows :\
-https://www.tripadvisor.fr/Restaurant_Review-g187137-d15335670-Reviews-La_table_Saint_Thomas-Reims_Marne_Grand_Est.html \
+    https://www.tripadvisor.fr/Restaurant_Review-g187137-d15335670-Reviews-La_table_Saint_Thomas-Reims_Marne_Grand_Est.html \
 it is first comprised of the website domain, then category, and by 2 IDs\
 here, in this example :\
 "g187137" is the city ID\
@@ -19,7 +19,7 @@ this api can scrap basic information about a restaurant of your liking and produ
 
 #### single restaurant reviews
 to do so you need to execute the following request :
-  http://127.0.0.1:8000/restaurant/{cityid}/{restaurantid}
+    http://127.0.0.1:8000/restaurant/{cityid}/{restaurantid}
 the info you are then getting is the top 30 reviews of that restaurant\
 you can add the following query to extract all reviews for that restaurant :\
     ?review=True
