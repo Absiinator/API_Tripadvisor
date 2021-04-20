@@ -18,28 +18,27 @@ here, in this example : \
 this api can scrap basic information about a restaurant of your liking and produce a JSON.
 
 #### single restaurant reviews
-to do so you need to execute the following request : \
-http://127.0.0.1:8000/restaurant/{cityid}/{restaurantid} \ 
-\
+to do so you need to execute the following request :\
+http://127.0.0.1:8000/restaurant/{cityid}/{restaurantid} \
 the info you are then getting is the top 30 reviews of that restaurant\
-you can add the following query to extract all reviews for that restaurant : \
+you can add the following query to extract all reviews for that restaurant :\
 ?review=True \ 
-so you should be having a url that looks like : \
+so you should be having a url that looks like :\
 http://127.0.0.1:8000/restaurant/{cityid}/{restaurantid}?review=True \ 
 
 #### multiple restaurants info 
-to do so you need to execute the following request : \ 
+to do so you need to execute the following request :\ 
 http://127.0.0.1:8000/restaurant/{cityid} \ 
 the info you are then getting is the top 30 restaurants of that city\
-you can add the following query to extract all restaurants for that city : \
+you can add the following query to extract all restaurants for that city :\
 ?full=True \ 
-so you should be having a url that looks like : \
+so you should be having a url that looks like :\
 http://127.0.0.1:8000/restaurant/{cityid}?full=True \
 you can add the following query to extract all reviews for that city :\
 ?review=True \ 
-so you should be having a url that looks like :
+so you should be having a url that looks like :\
 http://127.0.0.1:8000/restaurant/{cityid}?review=True \ 
-you can also combine both to extract all reviews for all the restaurants of the city you chose by : \
+you can also combine both to extract all reviews for all the restaurants of the city you chose by :\
 http://127.0.0.1:8000/restaurant/{cityid}?full=True&review=True
 
 #### dashboard
