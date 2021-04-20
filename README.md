@@ -11,7 +11,7 @@ a TripAdvisor URL is as follows :\
 https://www.tripadvisor.fr/Restaurant_Review-g187137-d15335670-Reviews-La_table_Saint_Thomas-Reims_Marne_Grand_Est.html \
 it is first comprised of the website domain, then category, and by 2 IDs\
 here, in this example :\
-"g187137" is thecity ID\
+"g187137" is the city ID\
 "d15335670" is the restaurant ID.
 
 ### what it can do
