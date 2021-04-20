@@ -23,7 +23,7 @@ http://127.0.0.1:8000/restaurant/{cityid}/{restaurantid}
 \
 the info you are then getting is the top 30 reviews of that restaurant\
 you can add the following query to extract all reviews for that restaurant :\
-?review=True \ 
+?review=True\ 
 so you should be having a url that looks like :\
 http://127.0.0.1:8000/restaurant/{cityid}/{restaurantid}?review=True
 \
