@@ -1,50 +1,54 @@
-# API_Tripadvisor
+# Api Tripadvisor
 
-This Api scraps and returns returns useful informations such as : the reviews (in french) and the global score of a restaurant from TripAdvisor
+## getting started
+This Api let's you scrap information of any restaurant of any city you choose in french.\
+there are a few thing to know before you use it :\
+This API can be pretty slow if you run it for a whole city, because of waiting time
 
-it scraps using the following instructions :
-  
-  if oyu solely want to extract all restaurants and bare informations from a surrounding area use
-  http://127.0.0.1:8000/restaurant/{cityid} 
-    
-    which you can find from trip advisor
-    by default, this scraps only the top 30 restaurants from your surrounding area
-  
-  following your instruction you can add query such as :
-  http://127.0.0.1:8000/restaurant/{cityid}?review=True
-  
-  or
-  
-  http://127.0.0.1:8000/restaurant/{cityid}?full=True
-    
-    which returns whether all reviews from the surrounding area or all restaurants from the area.
-    you can combine those query in something like this :
-  
-  http://127.0.0.1:8000/restaurant/{cityid}?review=True&full=True
-  
-    this returns all review from all restaurants from the area
-    This does take a few hours depending on the numbers of restaurants you intend to extract informations from
+### how TripAdvisor works
+This information is requiered to know before using the API, because it uses a similar structure.\
+a TripAdvisor URL is as follows :\
+https://www.tripadvisor.fr/Restaurant_Review-g187137-d15335670-Reviews-La_table_Saint_Thomas-Reims_Marne_Grand_Est.html \
+it is first comprised of the website domain, then category, and by 2 IDs\
+here, in this example :\
+"g187137" is thecity ID\
+"d15335670" is the restaurant ID.
 
-you can also scrap useful informations from a unique restaurant using :
+### what it can do
+this api can scrap basic information about a restaurant of your liking and produce a JSON.
 
+#### single restaurant reviews
+to do so you need to execute the following request :
   http://127.0.0.1:8000/restaurant/{cityid}/{restaurantid}
-  
-  this returns the informations from the first webpage displayed on TripAdvisor for the restaurant
-  this also takes the queries to extract all reviews
-  
-this Api can also display a useful dashboard using the instruction :
+the info you are then getting is the top 30 reviews of that restaurant\
+you can add the following query to extract all reviews for that restaurant :\
+  ?review=True
+so you should be having a url that looks like :
+  http://127.0.0.1:8000/restaurant/{cityid}/{restaurantid}?review=True
 
-http://127.0.0.1:8000/restaurant/{cityid}/{restaurantid}/dashboard
-  
-  this then returns :
-    restaurant infos
-    list of most used words in the reviews
-    a top 10 comments
-    a worst 10 comments
-    
-  (as of yet, it is still a bit laggy, but i will try to focus on it)
+#### multiple restaurants info 
+to do so you need to execute the following request :
+  http://127.0.0.1:8000/restaurant/{cityid}
+the info you are then getting is the top 30 restaurants of that city\
+you can add the following query to extract all restaurants for that city :\
+  ?full=True
+so you should be having a url that looks like :
+  http://127.0.0.1:8000/restaurant/{cityid}?full=True
+\
+you can add the following query to extract all reviews for that city :\
+  ?review=True
+so you should be having a url that looks like :
+  http://127.0.0.1:8000/restaurant/{cityid}?review=True
+you can also combine both to extract all reviews for all the restaurants of the city you chose by :
+  http://127.0.0.1:8000/restaurant/{cityid}?full=True&review=True
 
-This API is a work in progress and intends to ad a Sentiment Analysis part to examine a list of comments you may want to read from a .txt file
-or directly from Trip Advisor
+#### dashboard
+this api has a dashbord that can be displayed for a specific restaurant with the following informations:
+1. restaurant infos
+2. list of most used words in the review
+3. a top 10 best comments (user, score, date of visit and review)
+4. a top 10 worst comments (user, score, date of visit and review)
 
-the scraping part is based on a github repo made by LaskasP
+## TODO
+add better lisibility to the whole API itself and restructure it
+add Sentiment Analysis prediction based on review
