@@ -22,25 +22,25 @@ to do so you need to execute the following request :
   http://127.0.0.1:8000/restaurant/{cityid}/{restaurantid}
 the info you are then getting is the top 30 reviews of that restaurant\
 you can add the following query to extract all reviews for that restaurant :\
-  ?review=True
+    ?review=True
 so you should be having a url that looks like :
-  http://127.0.0.1:8000/restaurant/{cityid}/{restaurantid}?review=True
+    http://127.0.0.1:8000/restaurant/{cityid}/{restaurantid}?review=True
 
 #### multiple restaurants info 
 to do so you need to execute the following request :
-  http://127.0.0.1:8000/restaurant/{cityid}
+    http://127.0.0.1:8000/restaurant/{cityid}
 the info you are then getting is the top 30 restaurants of that city\
 you can add the following query to extract all restaurants for that city :\
-  ?full=True
+    ?full=True
 so you should be having a url that looks like :
-  http://127.0.0.1:8000/restaurant/{cityid}?full=True
+    http://127.0.0.1:8000/restaurant/{cityid}?full=True
 \
 you can add the following query to extract all reviews for that city :\
-  ?review=True
+    ?review=True
 so you should be having a url that looks like :
-  http://127.0.0.1:8000/restaurant/{cityid}?review=True
+    http://127.0.0.1:8000/restaurant/{cityid}?review=True
 you can also combine both to extract all reviews for all the restaurants of the city you chose by :
-  http://127.0.0.1:8000/restaurant/{cityid}?full=True&review=True
+    http://127.0.0.1:8000/restaurant/{cityid}?full=True&review=True
 
 #### dashboard
 this api has a dashbord that can be displayed for a specific restaurant with the following informations:
